@@ -30,8 +30,8 @@ class Abfahrtszeit:
         self.istAbfahrt = istAbfahrt
 
 def generateZeitenList(weekday, day, month, year):    
-    for i in range(60):
-        pAbf = random.randint(0, 1000)
+    for i in range(7):
+        pAbf = random.randint(0, 900)
         iAbf = pAbf + random.randint(0, 30)
         haltSt = random.randint(0, 14)
 
@@ -43,15 +43,34 @@ def generateZeitenList(weekday, day, month, year):
         month = (month + 1) if day == 1 else month
 
 def ermittle_verspaetungen(times):
-    allDelays = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-    daylyDelays = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    allDelays       = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    mondayDelays    = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    tuesdayDelays   = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    wednesdayDelays = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    thursdayDelays  = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    fridayDelays    = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    saturdayDelays  = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    sundayDelays    = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
     for i in range(len(times) - 1):
         if ((times[i+1].planAbfahrt - times[i].planAbfahrt) + 2 < (times[i+1].istAbfahrt - times[i].istAbfahrt)):
             allDelays[times[i].haltestellenNr] += 1
-        # if ()
 
-    return allDelays
+        if ("Montag" in times[i].datum):
+            mondayDelays[times[i].haltestellenNr] += 1
+    
+    delays = {
+        "Verspätungen": "\n",
+        "Montags"     : mondayDelays, 
+        "Dienstags"   : tuesdayDelays, 
+        "Mittwochs"   : wednesdayDelays, 
+        "Donnerstags" : thursdayDelays, 
+        "Freitags"    : fridayDelays, 
+        "Samstags"    : saturdayDelays, 
+        "Sonntags"    : sundayDelays,
+        "GESAMT"      : allDelays
+    }
+    return delays
 
 
 generateZeitenList(weekday, day, month, year)
@@ -66,9 +85,9 @@ for i in range(len(zeiten)):
 
     #Delays Ausgabe:
 if (not ermittle_verspaetungen(zeiten)):
-    print("Array ist leer")
+    print("Dictionary ist leer")
 else:
-    print(ermittle_verspaetungen(zeiten))
+    for key, value in ermittle_verspaetungen(zeiten).items():
+        print("\t\t\t{} :\t{}".format(key, value))
 
 input()
-
