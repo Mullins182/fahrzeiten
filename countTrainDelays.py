@@ -9,6 +9,12 @@
 
 import random
 
+zeiten = []
+weekday = "Montag"
+day = 1
+month = 1
+year = 2025
+
     # Array 'zeiten' initialisieren
 class Abfahrtszeit:
 
@@ -23,32 +29,32 @@ class Abfahrtszeit:
         self.planAbfahrt = planAbfahrt
         self.istAbfahrt = istAbfahrt
 
+def generateZeitenList(weekday, day, month, year):    
+    for i in range(60):
+        pAbf = random.randint(0, 1000)
+        iAbf = pAbf + random.randint(0, 30)
+        haltSt = random.randint(0, 14)
+
+        line = Abfahrtszeit("{}, {}.{}.{}".format(weekday, day, month, year), haltSt, pAbf, iAbf)
+        zeiten.append(line)
+        year = (year + 1) if (month == 12 and day == 31) else year
+        weekday = "Dienstag" if weekday == "Montag" else "Mittwoch" if weekday == "Dienstag" else "Donnerstag" if weekday == "Mittwoch" else "Freitag" if weekday == "Donnerstag" else "Samstag" if weekday == "Freitag" else "Sonntag" if weekday == "Samstag" else "Montag"
+        day = day + 1 if day < 31 else 1
+        month = (month + 1) if day == 1 else month
+
 def ermittle_verspaetungen(times):
-    delays = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    allDelays = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    daylyDelays = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
     for i in range(len(times) - 1):
         if ((times[i+1].planAbfahrt - times[i].planAbfahrt) + 2 < (times[i+1].istAbfahrt - times[i].istAbfahrt)):
-            delays[times[i].haltestellenNr] += 1
+            allDelays[times[i].haltestellenNr] += 1
+        # if ()
 
-    return delays
+    return allDelays
 
-zeiten = []
-weekday = "Montag"
-day = 1
-month = 1
-year = 2025
 
-for i in range(60):
-    pAbf = random.randint(0, 1000)
-    iAbf = pAbf + random.randint(0, 30)
-    haltSt = random.randint(0, 14)
-
-    line = Abfahrtszeit("{}, {}.{}.{}".format(weekday, day, month, year), haltSt, pAbf, iAbf)
-    zeiten.append(line)
-    year = (year + 1) if (month == 12 and day == 31) else year
-    weekday = "Dienstag" if weekday == "Montag" else "Mittwoch" if weekday == "Dienstag" else "Donnerstag" if weekday == "Mittwoch" else "Freitag" if weekday == "Donnerstag" else "Samstag" if weekday == "Freitag" else "Sonntag" if weekday == "Samstag" else "Montag"
-    day = day + 1 if day < 31 else 1
-    month = (month + 1) if day == 1 else month
+generateZeitenList(weekday, day, month, year)
 
 #DEBUG AUSGABE:
     #Datum, gepl. Abfahrt, tatsächl. Abfahrt
@@ -65,3 +71,4 @@ else:
     print(ermittle_verspaetungen(zeiten))
 
 input()
+
