@@ -31,18 +31,20 @@ class Abfahrtszeit:
 
 def generateZeitenList(weekday, day, month, year):    
     for i in range(7):
-        pAbf = random.randint(0, 900)
-        iAbf = pAbf + random.randint(0, 30)
-        haltSt = random.randint(0, 14)
+        haltSt = 0
+        for i in range(33):            
+            pAbf = random.randint(0, 900)
+            iAbf = pAbf + random.randint(0, 30)
 
-        line = Abfahrtszeit("{}, {}.{}.{}".format(weekday, day, month, year), haltSt, pAbf, iAbf)
-        zeiten.append(line)
+            line = Abfahrtszeit("{}, {}.{}.{}".format(weekday, day, month, year), haltSt, pAbf, iAbf)
+            zeiten.append(line)
+            haltSt = haltSt + 1 if haltSt < 14 else 0
         year = (year + 1) if (month == 12 and day == 31) else year
         weekday = "Dienstag" if weekday == "Montag" else "Mittwoch" if weekday == "Dienstag" else "Donnerstag" if weekday == "Mittwoch" else "Freitag" if weekday == "Donnerstag" else "Samstag" if weekday == "Freitag" else "Sonntag" if weekday == "Samstag" else "Montag"
         day = day + 1 if day < 31 else 1
         month = (month + 1) if day == 1 else month
 
-def ermittle_verspaetungen(times):
+def ermittle_verspaetungen(zeiten):
     allDelays       = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     mondayDelays    = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     tuesdayDelays   = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
@@ -52,15 +54,27 @@ def ermittle_verspaetungen(times):
     saturdayDelays  = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     sundayDelays    = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
-    for i in range(len(times) - 1):
-        if ((times[i+1].planAbfahrt - times[i].planAbfahrt) + 2 < (times[i+1].istAbfahrt - times[i].istAbfahrt)):
-            allDelays[times[i].haltestellenNr] += 1
+    for i in range(len(zeiten) - 1):
+        if ((zeiten[i+1].planAbfahrt - zeiten[i].planAbfahrt) + 2 < (zeiten[i+1].istAbfahrt - zeiten[i].istAbfahrt)):
+            allDelays[zeiten[i].haltestellenNr] += 1
 
-        if ("Montag" in times[i].datum):
-            mondayDelays[times[i].haltestellenNr] += 1
+            if ("Montag"        in zeiten[i].datum):
+                mondayDelays[zeiten[i].haltestellenNr] += 1
+            if ("Dienstag"      in zeiten[i].datum):
+                tuesdayDelays[zeiten[i].haltestellenNr] += 1
+            if ("Mittwoch"      in zeiten[i].datum):
+                wednesdayDelays[zeiten[i].haltestellenNr] += 1
+            if ("Donnerstag"    in zeiten[i].datum):
+                thursdayDelays[zeiten[i].haltestellenNr] += 1
+            if ("Freitag"       in zeiten[i].datum):
+                fridayDelays[zeiten[i].haltestellenNr] += 1
+            if ("Samstag"       in zeiten[i].datum):
+                saturdayDelays[zeiten[i].haltestellenNr] += 1
+            if ("Sonntag"       in zeiten[i].datum):
+                sundayDelays[zeiten[i].haltestellenNr] += 1
     
     delays = {
-        "Verspätungen": "\n",
+        "Verspätungen\t(von links, Streckenabschnitt 0 bis 14)": "\n",
         "Montags"     : mondayDelays, 
         "Dienstags"   : tuesdayDelays, 
         "Mittwochs"   : wednesdayDelays, 
@@ -72,22 +86,25 @@ def ermittle_verspaetungen(times):
     }
     return delays
 
+def outputObjData():
+            #DEBUG AUSGABE:
+    #Datum, Haltestelle, gepl. Abfahrt, tatsächl. Abfahrt
+    for i in range(len(zeiten)):
+        print("Datum: " + str(zeiten[i].datum))
+        print("Haltestelle: " + str(zeiten[i].haltestellenNr))
+        print("geplante Abfahrt: " + str(zeiten[i].planAbfahrt))
+        print("tatsächl Abfahrt: " + str(zeiten[i].istAbfahrt))
+        print("")
+
+def outputDelaysData():
+        #Delays (Dictionary) Ausgabe:
+    if (not ermittle_verspaetungen(zeiten)):
+        print("Dictionary ist leer")
+    else:
+        for key, value in ermittle_verspaetungen(zeiten).items():
+            print("\t\t\t{} :\t{}".format(key, value))
 
 generateZeitenList(weekday, day, month, year)
-
-#DEBUG AUSGABE:
-    #Datum, gepl. Abfahrt, tatsächl. Abfahrt
-for i in range(len(zeiten)):
-    print("Datum: " + str(zeiten[i].datum))
-    print("geplante Abfahrt: " + str(zeiten[i].planAbfahrt))
-    print("tatsächl Abfahrt: " + str(zeiten[i].istAbfahrt))
-    print("Haltestelle: " + str(zeiten[i].haltestellenNr))
-
-    #Delays Ausgabe:
-if (not ermittle_verspaetungen(zeiten)):
-    print("Dictionary ist leer")
-else:
-    for key, value in ermittle_verspaetungen(zeiten).items():
-        print("\t\t\t{} :\t{}".format(key, value))
-
+outputObjData()
+outputDelaysData()
 input()
