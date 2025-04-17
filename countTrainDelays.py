@@ -10,6 +10,7 @@
 import random
 
 zeiten = []
+weeklyOutp = False
 weekday = "Montag"
 day = 1
 month = 1
@@ -32,7 +33,7 @@ class Abfahrtszeit:
 def generateZeitenList(weekday, day, month, year):    
     for i in range(7):
         haltSt = 0
-        for i in range(33):            
+        for i in range(7 if weeklyOutp else 100):            
             pAbf = random.randint(0, 900)
             iAbf = pAbf + random.randint(0, 30)
 
@@ -104,6 +105,7 @@ def outputDelaysData():
         for key, value in ermittle_verspaetungen(zeiten).items():
             print("\t\t\t{} :\t{}".format(key, value))
 
+weeklyOutp = True if input("Wöchentliche Ausgabe der Verspätungen gewünscht? Dann gib [1] ein ") == "1" else False
 generateZeitenList(weekday, day, month, year)
 outputObjData()
 outputDelaysData()
