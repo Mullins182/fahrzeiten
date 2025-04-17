@@ -23,6 +23,15 @@ class Abfahrtszeit:
         self.planAbfahrt = planAbfahrt
         self.istAbfahrt = istAbfahrt
 
+def ermittle_verspaetungen(times):
+    delays = [15]
+
+    for i in range(len(times)):
+        if ((times[i+1].planAbfahrt - times[i].planAbfahrt) + 2 < (times[i+1].istAbfahrt - times[i].istAbfahrt)):
+            delays[times[i].haltestellenNr] += 1
+
+    return delays
+
 zeiten = []
 day = 1
 month = 1
@@ -39,10 +48,16 @@ for i in range(60):
     day = day + 1 if day < 31 else 1
     month = (month + 1) if day == 1 else month
 
+
+
 #DEBUG AUSGABE:
-for j in range(len(zeiten)):
-    print("Datum: " + str(zeiten[j].datum))
-    print("geplante Abfahrt: " + str(zeiten[j].planAbfahrt))
-    print("tatsächl Abfahrt: " + str(zeiten[j].istAbfahrt))
+    #Datum, gepl. Abfahrt, tatsächl. Abfahrt
+for i in range(len(zeiten)):
+    print("Datum: " + str(zeiten[i].datum))
+    print("geplante Abfahrt: " + str(zeiten[i].planAbfahrt))
+    print("tatsächl Abfahrt: " + str(zeiten[i].istAbfahrt))
+
+    #Delays Ausgabe:
+print(str(ermittle_verspaetungen(zeiten)))
 
 input()
