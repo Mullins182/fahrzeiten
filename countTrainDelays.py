@@ -8,9 +8,10 @@
 # Fahrtzeit größer ist als die geplante Fahrtzeit PLUS 2 Minuten !
 
 import random
+import os
 
 zeiten = []
-weeklyOutp = False
+restartPrg = ""
 weekday = "Montag"
 day = 1
 month = 1
@@ -30,10 +31,10 @@ class Abfahrtszeit:
         self.planAbfahrt = planAbfahrt
         self.istAbfahrt = istAbfahrt
 
-def generateZeitenList(weekday, day, month, year):    
+def generateZeitenList(weekday, day, month, year, weeklyOutput):    
     for i in range(7):
         haltSt = 0
-        for i in range(7 if weeklyOutp else 100):            
+        for i in range(7 if weeklyOutput else 100):            
             pAbf = random.randint(0, 900)
             iAbf = pAbf + random.randint(0, 30)
 
@@ -105,8 +106,14 @@ def outputDelaysData():
         for key, value in ermittle_verspaetungen(zeiten).items():
             print("\t\t\t{} :\t{}".format(key, value))
 
-weeklyOutp = True if input("Wöchentliche Ausgabe der Verspätungen gewünscht? Dann gib [1] ein ") == "1" else False
-generateZeitenList(weekday, day, month, year)
-outputObjData()
-outputDelaysData()
-input()
+def routine():
+    weekly = True if input("Wöchentliche Ausgabe der Verspätungen gewünscht? Ja [y], Nein [n] !") == "y" else False
+    generateZeitenList(weekday, day, month, year, weekly)
+    outputObjData()
+    outputDelaysData()
+    restartPrg = input("Drück eine beliebige Taste um das Programm fortzusetzen, oder [q] zum beenden !")
+    return restartPrg
+
+while restartPrg != "q":
+    os.system('cls')
+    restartPrg = routine()
